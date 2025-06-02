@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.productos.model.Producto;
-import com.example.productos.repository.ProductoRepository;
+import com.example.productos.repository.ProductRepository;
 
 @RestController
 @RequestMapping("/productos")
 public class ProductoController {
 
-    private final ProductoRepository repo;
+    private final ProductRepository repo;
 
-    public ProductoController(ProductoRepository repo) {
+    public ProductoController(ProductRepository repo) {
         this.repo = repo;
     }
 
