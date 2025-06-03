@@ -12,6 +12,9 @@ import com.example.tienda.boletas.model.DetalleBoleta;
 import com.example.tienda.boletas.repository.BoletaRepository;
 import com.example.tienda.productos.service.ProductService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class BoletaService {
 
@@ -59,5 +62,10 @@ public class BoletaService {
 
     public void eliminarPorId(Long id) {
         boletaRepository.deleteById(id);
+    }
+
+    // Nuevo método con paginación
+    public Page<Boleta> listarBoletasPaginadas(Pageable pageable) {
+        return boletaRepository.findAll(pageable);
     }
 }
