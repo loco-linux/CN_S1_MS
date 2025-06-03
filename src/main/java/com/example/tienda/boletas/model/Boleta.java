@@ -1,4 +1,4 @@
-package com.example.boletas.model;
+package com.example.tienda.boletas.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

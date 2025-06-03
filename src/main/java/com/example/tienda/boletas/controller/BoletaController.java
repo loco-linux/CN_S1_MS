@@ -1,10 +1,14 @@
-package com.example.boletas.controller;
+package com.example.tienda.boletas.controller;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.example.boletas.dto.CarritoCompraRequest;
-import com.example.boletas.model.Boleta;
-import com.example.boletas.service.BoletaService;
+import com.example.tienda.boletas.dto.CarritoCompraRequest;
+import com.example.tienda.boletas.model.Boleta;
+import com.example.tienda.boletas.service.BoletaService;
 
 @RestController
 @RequestMapping("/api/v1/boletas")

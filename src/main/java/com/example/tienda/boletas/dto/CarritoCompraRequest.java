@@ -1,4 +1,4 @@
-package com.example.boletas.dto;
+package com.example.tienda.boletas.dto;
 
 import java.util.List;
 

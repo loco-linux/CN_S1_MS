@@ -1,4 +1,4 @@
-package com.example.boletas.service;
+package com.example.tienda.boletas.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.example.boletas.dto.CarritoCompraRequest;
-import com.example.boletas.model.Boleta;
-import com.example.boletas.model.DetalleBoleta;
-import com.example.boletas.repository.BoletaRepository;
-import com.example.productos.service.ProductService;
+import com.example.tienda.boletas.dto.CarritoCompraRequest;
+import com.example.tienda.boletas.model.Boleta;
+import com.example.tienda.boletas.model.DetalleBoleta;
+import com.example.tienda.boletas.repository.BoletaRepository;
+import com.example.tienda.productos.service.ProductService;
 
 @Service
 public class BoletaService {

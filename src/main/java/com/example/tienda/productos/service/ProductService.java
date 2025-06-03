@@ -1,9 +1,9 @@
-package com.example.productos.service;
+package com.example.tienda.productos.service;
 
 import org.springframework.stereotype.Service;
 
-import com.example.productos.model.Producto;
-import com.example.productos.repository.ProductRepository;
+import com.example.tienda.productos.model.Producto;
+import com.example.tienda.productos.repository.ProductRepository;
 
 @Service
 public class ProductService {
