@@ -1,36 +1,38 @@
-# Etapa de build
-FROM eclipse-temurin:22-jdk AS buildstage
+# Stage 1: Build
+FROM eclipse-temurin:17-jdk AS buildstage
 
-# Instalar Maven
+# Instala Maven
 RUN apt-get update && apt-get install -y maven unzip
 
 WORKDIR /app
 
-# Copiar TODO el proyecto
-COPY . .
+# Copia el pom.xml y src
+COPY pom.xml .
+COPY src ./src
 
-# Variables para Oracle Wallet
+# Variables para Oracle Wallet durante el build (si es necesario)
 ENV TNS_ADMIN=/app/src/main/resources/wallet
 
-# Compilar
+# Compilar el proyecto
 RUN mvn clean package -DskipTests
 
-# Etapa de producción
-FROM eclipse-temurin:22-jdk
+# Stage 2: Run
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-# Copiar el .jar generado
-COPY --from=buildstage /app/target/productos-service-0.0.1-SNAPSHOT.jar .
+# Copiar solo el JAR compilado
+COPY --from=buildstage /app/target/*.jar app.jar
 
-# Copiar wallet
+# Copiar wallet si es necesario (esto ya es en runtime)
 COPY src/main/resources/wallet ./wallet
 
-# Variables de entorno
+# Variables de entorno para el runtime
 ENV TNS_ADMIN=/app/wallet
 
-# Exponer puerto
+# Exponer el puerto 8080
 EXPOSE 8080
 
-# Comando para arrancar
-ENTRYPOINT ["java", "-jar", "productos-service-0.0.1-SNAPSHOT.jar"]
+# Comando para ejecutar la aplicación
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
