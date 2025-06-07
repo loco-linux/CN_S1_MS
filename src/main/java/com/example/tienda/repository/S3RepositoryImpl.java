@@ -46,10 +46,10 @@ public class S3RepositoryImpl implements S3Repository {
         HeadObjectResponse headResponse = s3Client.headObject(headRequest);
 
         return Asset.builder()
-                .name(headResponse.metadata().get("name"))
-                .key(key)
-                .url(s3Client.utilities().getUrl(builder -> builder.bucket(bucket).key(key)).toExternalForm())
-                .build();
+            .name(headResponse.metadata().get("name"))
+            .key(key)
+            .url(s3Client.utilities().getUrl(builder -> builder.bucket(bucket).key(key)).toExternalForm())
+            .build();
     }
 
     @Override

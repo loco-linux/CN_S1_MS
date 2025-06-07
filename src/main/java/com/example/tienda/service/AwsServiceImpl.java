@@ -52,9 +52,14 @@ public class AwsServiceImpl implements AwsService {
     }
 
     @Override
-    public byte[] downloadFile(String bucketName, String fileName) throws IOException {
-        return s3Repository.downloadFile(bucketName, fileName);
+    public byte[] downloadFile(String bucketName, String fileName) {
+        try {
+            return s3Repository.downloadFile(bucketName, fileName);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to download file", e);
+        }
     }
+    
 
     @Override
     public void moveObject(String bucketName, String fileKey, String destinationFileKey) {
