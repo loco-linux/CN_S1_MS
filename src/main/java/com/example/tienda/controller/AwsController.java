@@ -57,7 +57,7 @@ public class AwsController {
                     .header("Content-Type", "application/octet-stream")
                     .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
                     .body(resource);
-        } catch (IOException e) {
+        } catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

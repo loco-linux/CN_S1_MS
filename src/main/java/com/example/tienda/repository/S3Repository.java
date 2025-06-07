@@ -1,18 +1,16 @@
 package com.example.tienda.repository;
 
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.example.tienda.model.Asset;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
-// define metodos para interactuar con un almacenamiento S3, como listar objetos en un bucket, obtener objetos individuales, 
-// descargar archivos, mover objetos entre ubicaciones, eliminar objetos y subir nuevos archivos
-
+// Define metodos para interactuar con un almacenamiento S3.
 public interface S3Repository {
     List<Asset> listObjectsInBucket(String bucket);
 
-    S3ObjectInputStream getoObject(String bucketName, String fileName) throws IOException;
+    InputStream getObject(String bucketName, String fileName) throws IOException;
 
     byte[] downloadFile(String bucketName, String fileName) throws IOException;
 
