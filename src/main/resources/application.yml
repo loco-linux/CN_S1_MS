@@ -1,0 +1,10 @@
+cloud:
+    aws:
+        credentials:
+            access-key: ASIAXXEC3QIWQ5WM54PA
+            secret-key: tyQvgMGLopSK6FIV6yHkaSb7xtpTGoSpbnlq4rsw
+            session-token: IQoJb3JpZ2luX2VjEJD//////////wEaCXVzLXdlc3QtMiJIMEYCIQDkUJ35OJwp9NASL1DxSVjm9LuhmMh0tnwEvdTOa3xk0QIhALFkjVLPdV4chAwoFrAZBmn0LpCHH6x93Z/sWD+VAi26Kq8CCGkQAxoMNTMwNzAyODkzNjEzIgyBVSlGHXFKd0Kqx8UqjAIUgVQtYwl60L68p0ZjNGd9IpZt53QgPr+EDW6vcTDP5+qqzYjxF9ij8WyekcCfyYU2Zd4KHRbkj7QNlM7jP7Jg5IyrAD5lZJWn5RRZ1ZX4xMwUP6J+DljINdQB3P/FGenNGlhIdcqV1lG7j6qSFBQ2TeVwNiXSHH95GSgtlY//1379PEhYKjl3B4n80sNtN63iSxJ0tcrZinniGM28rTgGBv6y4JBpm9y4sPYuZwVKqlXtjMPeRbVQix6von4sdJ2UJXEoHMB9tx2+5hh4a0u1IZMOHVOF5GDZtphTHlI0w6fraFQnSUJRfPRWtBQ1P8CN7zX6AuwhTuQeJLh3B0Yfmrs+s8O/AaJslw2FMNWCjsIGOpwBCSUyGpmd1cZHC2rGGc8Il0q2fyWIyiSjyebLLQsfIAJwoX/c4vOkONTfLpKEa3M+lJGYvZ5PKGBgu5+HS7HRMbkH6wrRx6mvUGE4Pt+M1LL41H2Z6v918qnOXn1NRBAXRJ/eHS92dcUrnu1B6i9hX8GQXge3Fzj4dPPHPMvPCBYKACdZhvx6rqu1PQdXNRP2h+aSV3Z7WlsZswTh
+        region:
+            static: us-east-1
+        stack:
+            auto: false
