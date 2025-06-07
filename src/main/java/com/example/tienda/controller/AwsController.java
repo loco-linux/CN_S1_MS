@@ -6,84 +6,94 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/s3")
+@RequestMapping("/s3")
 public class AwsController {
 
-    private AwsService awsService;
+    private final AwsService awsService;
 
-    // ~ AwsServiceImpl
-    @Autowired 
+    @Autowired
     public AwsController(AwsService awsService) {
         this.awsService = awsService;
     }
 
-    // http://127.0.0.1:8080/s3/getS3FileContent (Count=6 Total=0.20s Max=0.00s)
     @GetMapping("/getS3FileContent")
-    public ResponseEntity<String> getS3FileContent(@RequestParam(value = "bucketName") String bucketName, @RequestParam(value = "fileName") String fileName) throws IOException {
-        return new ResponseEntity<>(awsService.getS3FileContent(bucketName, fileName), HttpStatus.OK);
+    public ResponseEntity<String> getS3FileContent(@RequestParam("bucketName") String bucketName,
+                                                   @RequestParam("fileName") String fileName) {
+        try {
+            String content = awsService.getS3FileContent(bucketName, fileName);
+            return ResponseEntity.ok(content);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to read file content.");
+        }
     }
 
     @GetMapping("/listS3Files")
-    public ResponseEntity<List<Asset>> listS3Files(@RequestParam(value = "bucketName") String bucketName) throws IOException {
-        List<Asset> list = new ArrayList<>();
-        HttpStatus status = HttpStatus.OK;
+    public ResponseEntity<List<Asset>> listS3Files(@RequestParam("bucketName") String bucketName) {
         try {
-            list = awsService.getS3Files(bucketName);
+            List<Asset> files = awsService.getS3Files(bucketName);
+            return ResponseEntity.ok(files);
         } catch (Exception e) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return new ResponseEntity<>(list, status);
     }
 
-    // http://127.0.0.1:8080/s3/downloadS3File (Count=5 Total=2.27s Max=0.00s)
     @GetMapping("/downloadS3File")
-    public ResponseEntity<ByteArrayResource> downloadS3File(@RequestParam(value = "bucketName") String bucketName, @RequestParam(value = "filePath") String filePath, @RequestParam(value = "fileName") String fileName)
-            throws IOException {
-        byte[] data = awsService.downloadFile(bucketName, fileName);
-        ByteArrayResource resource = new ByteArrayResource(data);
+    public ResponseEntity<ByteArrayResource> downloadS3File(@RequestParam("bucketName") String bucketName,
+                                                            @RequestParam("filePath") String filePath,
+                                                            @RequestParam("fileName") String fileName) {
+        try {
+            byte[] data = awsService.downloadFile(bucketName, fileName);
+            ByteArrayResource resource = new ByteArrayResource(data);
 
-        return ResponseEntity
-                .ok()
-                .contentLength(data.length)
-                .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
-                .body(resource);
+            return ResponseEntity.ok()
+                    .contentLength(data.length)
+                    .header("Content-Type", "application/octet-stream")
+                    .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    // http://127.0.0.1:8080/s3/deleteObject (Count=4 Total=1.77s Max=0.00s)
     @DeleteMapping("/deleteObject")
-    public ResponseEntity<String> deleteObject(@RequestParam(value = "bucketName") String bucketName, @RequestParam(value = "fileName") String fileName) {
-        awsService.deleteObject(bucketName, fileName);
-        return new ResponseEntity<>("File deleted", HttpStatus.OK);
+    public ResponseEntity<String> deleteObject(@RequestParam("bucketName") String bucketName,
+                                               @RequestParam("fileName") String fileName) {
+        try {
+            awsService.deleteObject(bucketName, fileName);
+            return ResponseEntity.ok("File deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete file.");
+        }
     }
 
-    // http://127.0.0.1:8080/s3/moveFile (Count=1 Total=0.02s Max=0.00s)
-    @PutMapping("/moveFile") // Asumo que es PutMapping por el contexto y la URL.
-    public ResponseEntity<String> moveFile(@RequestParam(value = "bucketName") String bucketName,
-                                           @RequestParam(value = "fileKey") String fileKey,
-                                           @RequestParam(value = "fileNameDest") String fileNameDest) { // Corregido el nombre del parámetro según el uso
-        awsService.moveObject(bucketName, fileKey, fileNameDest); // Corregido el nombre del parámetro según el uso
-        return new ResponseEntity<>("File moved", HttpStatus.OK);
+    @PutMapping("/moveFile")
+    public ResponseEntity<String> moveFile(@RequestParam("bucketName") String bucketName,
+                                           @RequestParam("fileKey") String fileKey,
+                                           @RequestParam("fileNameDest") String fileNameDest) {
+        try {
+            awsService.moveObject(bucketName, fileKey, fileNameDest);
+            return ResponseEntity.ok("File moved successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to move file.");
+        }
     }
 
-    // http://127.0.0.1:8080/s3/uploadFile (Count=4 Total=1.56s Max=0.00s)
     @PostMapping("/uploadFile")
-    public ResponseEntity<String> uploadFile(@RequestParam(value = "bucketName") String bucketName, @RequestParam(value = "filePath") String filePath,
-                                             @RequestParam(value = "file") MultipartFile file) {
-        return new ResponseEntity<>(awsService.uploadFile(bucketName, filePath, file), HttpStatus.OK);
+    public ResponseEntity<String> uploadFile(@RequestParam("bucketName") String bucketName,
+                                             @RequestParam("filePath") String filePath,
+                                             @RequestParam("file") MultipartFile file) {
+        try {
+            String message = awsService.uploadFile(bucketName, filePath, file);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file.");
+        }
     }
-
 }

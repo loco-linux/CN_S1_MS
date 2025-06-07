@@ -71,11 +71,19 @@
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-messaging</artifactId>	
         </dependency>
-        <!-- AWS SDK for S3 -->
+       
+        <!-- AWS SDK v2 - S3 -->
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.678</version> <!-- La versión puede variar, esta es reciente -->
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
         </dependency>
 
         <!-- Lombok -->
@@ -85,6 +93,7 @@
             <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
+
 
 
         <!--Dependencias propias de Oracle no expuestas en Spring Initializr-->

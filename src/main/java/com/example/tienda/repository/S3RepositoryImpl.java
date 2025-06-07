@@ -1,72 +1,73 @@
 package com.example.tienda.repository;
 
-import com.amazonaws.services.*;
-import com.amazonaws.util.IOUtils;
-
+import com.example.tienda.model.Asset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.example.tienda.model.Asset;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.core.sync.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import java.io.*;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
-
-
-// implementa la interfaz S3Repository y define metodos especificos para interactuar con AWS S3 como listar objetos en un bucket
 
 @Repository
 public class S3RepositoryImpl implements S3Repository {
 
     private static final Logger log = LoggerFactory.getLogger(S3RepositoryImpl.class);
-    
-    private AmazonS3 s3Client;
+
+    private final S3Client s3Client;
 
     @Autowired
-    public S3RepositoryImpl(AmazonS3 s3Client){
+    public S3RepositoryImpl(S3Client s3Client) {
         this.s3Client = s3Client;
     }
 
     @Override
-    public List<Asset> listObjectsInBucket(String bucket){
-        List<Asset> items =
-            s3Client.listObjectsV2(bucket).getObjectSummaries().stream()
-                .parallel()
-                .map(S3ObjectSummary::getKey)
-                .map(key -> mapS3ToObject(bucket, key))
+    public List<Asset> listObjectsInBucket(String bucket) {
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucket)
+                .build();
+        ListObjectsV2Response response = s3Client.listObjectsV2(listRequest);
+
+        List<Asset> items = response.contents().stream()
+                .map(s3Object -> mapS3ToObject(bucket, s3Object.key()))
                 .collect(Collectors.toList());
-        log.info("Found " + items.size() + " objects in the bucket " + bucket);
+        log.info("Found {} objects in the bucket {}", items.size(), bucket);
         return items;
     }
 
-    private Asset mapS3ToObject(String bucket, String key){
+    private Asset mapS3ToObject(String bucket, String key) {
+        HeadObjectRequest headRequest = HeadObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        HeadObjectResponse headResponse = s3Client.headObject(headRequest);
+
         return Asset.builder()
-            .name(s3Client.getObjectMetadata(bucket, key).getUserMetaDataOf("name"))
-            .key(key)
-            .url(s3Client.getUrl(bucket, key))
-            .build();
+                .name(headResponse.metadata().get("name"))
+                .key(key)
+                .url(s3Client.utilities().getUrl(builder -> builder.bucket(bucket).key(key)).toExternalForm())
+                .build();
     }
 
     @Override
-    public S3ObjectInputStream getObject(String bucketName, String fileName) throws IOException {
-        if (!s3Client.doesBucketExistV2(bucketName)) {
-            log.error("No bucket Found");
-            return null;
-        }
-        S3Object s3object = s3Client.getObject(bucketName, fileName);
-        return s3object.getObjectContent();
+    public InputStream getObject(String bucketName, String fileName) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+
+        ResponseInputStream<GetObjectResponse> response = s3Client.getObject(getObjectRequest);
+        return response;
     }
 
     @Override
     public byte[] downloadFile(String bucketName, String fileName) {
-        S3Object s3Object = s3Client.getObject(bucketName, fileName);
-        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-        try {
-            byte[] content = IOUtils.toByteArray(inputStream);
-            return content;
+        try (InputStream inputStream = getObject(bucketName, fileName)) {
+            return inputStream.readAllBytes();
         } catch (IOException e) {
             e.printStackTrace();
             return new byte[0];
@@ -75,18 +76,33 @@ public class S3RepositoryImpl implements S3Repository {
 
     @Override
     public void moveObject(String bucketName, String fileKey, String destinationFileKey) {
-        CopyObjectRequest copyObjRequest = new CopyObjectRequest(bucketName, fileKey, bucketName, destinationFileKey);
-        s3Client.copyObject(copyObjRequest);
+        CopyObjectRequest copyRequest = CopyObjectRequest.builder()
+                .sourceBucket(bucketName)
+                .sourceKey(fileKey)
+                .destinationBucket(bucketName)
+                .destinationKey(destinationFileKey)
+                .build();
+        s3Client.copyObject(copyRequest);
         deleteObject(bucketName, fileKey);
     }
 
     @Override
     public void deleteObject(String bucketName, String fileKey) {
-        s3Client.deleteObject(bucketName, fileKey);
+        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileKey)
+                .build();
+        s3Client.deleteObject(deleteRequest);
     }
 
+    @Override
     public String uploadFile(String bucketName, String fileName, File fileObj) {
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+        PutObjectRequest putRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+
+        s3Client.putObject(putRequest, fileObj.toPath());
         fileObj.delete();
         return "File uploaded: " + fileName;
     }
