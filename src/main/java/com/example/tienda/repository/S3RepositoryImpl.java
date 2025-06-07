@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.core.sync.ResponseInputStream;
-import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,11 +31,9 @@ public class S3RepositoryImpl implements S3Repository {
                 .build();
         ListObjectsV2Response response = s3Client.listObjectsV2(listRequest);
 
-        List<Asset> items = response.contents().stream()
+        return response.contents().stream()
                 .map(s3Object -> mapS3ToObject(bucket, s3Object.key()))
                 .collect(Collectors.toList());
-        log.info("Found {} objects in the bucket {}", items.size(), bucket);
-        return items;
     }
 
     private Asset mapS3ToObject(String bucket, String key) {
@@ -65,12 +62,9 @@ public class S3RepositoryImpl implements S3Repository {
     }
 
     @Override
-    public byte[] downloadFile(String bucketName, String fileName) {
+    public byte[] downloadFile(String bucketName, String fileName) throws IOException {
         try (InputStream inputStream = getObject(bucketName, fileName)) {
             return inputStream.readAllBytes();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new byte[0];
         }
     }
 

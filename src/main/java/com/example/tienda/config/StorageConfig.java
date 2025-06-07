@@ -6,7 +6,6 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 
 @Configuration
@@ -15,8 +14,7 @@ public class StorageConfig {
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
-                .region(Region.US_EAST_1) // tu región
-                .httpClientBuilder(ApacheHttpClient.builder()) // ← Agrega esto
+                .region(Region.US_EAST_1) // tu región              
                 .credentialsProvider(
                         StaticCredentialsProvider.create(
                                 AwsBasicCredentials.create(
@@ -25,6 +23,7 @@ public class StorageConfig {
                                 )
                         )
                 )
+                .httpClientBuilder(ApacheHttpClient.builder()) //
                 .build();
     }
 }

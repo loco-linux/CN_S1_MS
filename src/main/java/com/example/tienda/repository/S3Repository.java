@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-// Define metodos para interactuar con un almacenamiento S3.
 public interface S3Repository {
     List<Asset> listObjectsInBucket(String bucket);
 
