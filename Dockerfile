@@ -6,15 +6,11 @@ RUN apt-get update && apt-get install -y maven unzip
 
 WORKDIR /app
 
-# Copiar POM y bajar dependencias (más seguro: skip go-offline)
-COPY pom.xml .
-COPY src ./src
+# Copiar TODO el proyecto
+COPY . .
 
-# Copiar wallet (solo si existe en el proyecto)
-COPY src/main/resources/wallet /app/wallet
-
-# Variables para Oracle
-ENV TNS_ADMIN=/app/wallet
+# Variables para Oracle Wallet
+ENV TNS_ADMIN=/app/src/main/resources/wallet
 
 # Compilar
 RUN mvn clean package -DskipTests
@@ -33,7 +29,7 @@ COPY src/main/resources/wallet ./wallet
 # Variables de entorno
 ENV TNS_ADMIN=/app/wallet
 
-# Exponer puerto de la app
+# Exponer puerto
 EXPOSE 8080
 
 # Comando para arrancar

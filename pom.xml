@@ -99,7 +99,7 @@
         </dependency>
     </dependencies>
 
-    <!-- 👇 Esto va en dependencyManagement, NO en dependencies -->
+    <!-- Esto va en dependencyManagement, NO en dependencies -->
     <dependencyManagement>
         <dependencies>
             <dependency>
