@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
-import software.amazon.awssdk.core.sync.ResponseInputStream;
+//import software.amazon.awssdk.core.sync.ResponseInputStream;
+import software.amazon.awssdk.core.ResponseInputStream;
+
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
