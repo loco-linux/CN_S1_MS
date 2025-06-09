@@ -12,5 +12,6 @@ public interface AwsService {
     byte[] downloadFile(String bucketName, String fileName);
     void deleteObject(String bucketName, String fileName);
     void moveObject(String bucketName, String fileKey, String fileNameDest);
-    String uploadFile(String bucketName, String filePath, MultipartFile file) throws IOException;
+    //String uploadFile(String bucketName, String filePath, MultipartFile file) throws IOException;
+    String uploadFile(String bucketName, MultipartFile file) throws IOException;
 }
