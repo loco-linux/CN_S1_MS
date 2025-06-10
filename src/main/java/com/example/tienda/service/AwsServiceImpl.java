@@ -33,6 +33,7 @@ public class AwsServiceImpl implements AwsService {
 
     @Override
     public List<Asset> getS3Files() {
+        log.info("Usando bucket: {}", bucketName);
         return s3Repository.listObjectsInBucket(bucketName);
     }
 
