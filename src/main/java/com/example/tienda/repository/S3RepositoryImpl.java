@@ -1,18 +1,30 @@
 package com.example.tienda.repository;
 
-import com.example.tienda.model.Asset;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
-//import software.amazon.awssdk.core.sync.ResponseInputStream;
-import software.amazon.awssdk.core.ResponseInputStream;
 
-import java.io.*;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.tienda.model.Asset;
+
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Repository
 public class S3RepositoryImpl implements S3Repository {
@@ -26,7 +38,7 @@ public class S3RepositoryImpl implements S3Repository {
         this.s3Client = s3Client;
     }
 
-    @Override
+/*/    @Override
     public List<Asset> listObjectsInBucket(String bucket) {
         ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
                 .bucket(bucket)
@@ -36,6 +48,27 @@ public class S3RepositoryImpl implements S3Repository {
         return response.contents().stream()
                 .map(s3Object -> mapS3ToObject(bucket, s3Object.key()))
                 .collect(Collectors.toList());
+    }*/
+
+    @Override
+    public List<Asset> listObjectsInBucket(String bucket) {
+        try {
+            ListObjectsV2Response response = s3Client.listObjectsV2(
+                    ListObjectsV2Request.builder().bucket(bucket).build()
+            );
+
+            return response.contents().stream()
+                    .map(obj -> Asset.builder()
+                            .key(obj.key())
+                            .url(s3Client.utilities().getUrl(b -> b.bucket(bucket).key(obj.key())).toExternalForm())
+                            .name(null)
+                            .build())
+                    .collect(Collectors.toList());
+
+        } catch (S3Exception e) {
+            log.error("Error al listar objetos de S3: {}", e.awsErrorDetails().errorMessage());
+            throw new RuntimeException("Error al acceder al bucket S3", e);
+        }
     }
 
     private Asset mapS3ToObject(String bucket, String key) {
