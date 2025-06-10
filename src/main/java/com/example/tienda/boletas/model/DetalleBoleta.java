@@ -9,7 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 public class DetalleBoleta {
     @Id
@@ -18,6 +19,7 @@ public class DetalleBoleta {
 
     @ManyToOne
     @JoinColumn(name = "boleta_id")
+    @JsonBackReference
     private Boleta boleta;
 
     @Column(name = "producto_id")
