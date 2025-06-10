@@ -10,8 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Boleta {
@@ -24,7 +22,6 @@ public class Boleta {
     private BigDecimal total;
 
     @OneToMany(mappedBy = "boleta", cascade = CascadeType.ALL)
-    @JsonBackReference
     private List<DetalleBoleta> detalles;
 
     // Getters and setters
