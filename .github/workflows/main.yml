@@ -86,6 +86,7 @@ jobs:
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             -e AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }} \
             -e AWS_REGION=us-east-1 \
+            --name my-app \
             -p 8080:8080 \
             ${{ secrets.DOCKERHUB_USERNAME }}/my-app:latest
 
