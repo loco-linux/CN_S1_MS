@@ -19,9 +19,7 @@ RUN mvn clean package -DskipTests
 # Stage 2: Run
 FROM eclipse-temurin:17-jre
 
-# Crear usuario no-root por seguridad
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup
+
 
 WORKDIR /app
 
@@ -41,11 +39,6 @@ RUN mkdir -p /app/efs && \
     chown appuser:appgroup /app/efs && \
     chmod 755 /app/efs
 
-# Cambiar ownership del archivo
-RUN chown appuser:appgroup app.jar
-
-# Cambiar a usuario no-root
-USER appuser
 
 # Crear un volume point para EFS
 VOLUME ["/app/efs"]
