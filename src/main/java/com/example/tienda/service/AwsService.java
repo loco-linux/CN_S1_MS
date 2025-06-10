@@ -15,6 +15,8 @@ public interface AwsService {
     void deleteObject(String fileName);
     void moveObject(String fileKey, String fileNameDest);
     String uploadFile(String path, MultipartFile file) throws IOException;
+    List<String> listarFacturasPorCliente(String clienteId);
+
 }
 
 /*public interface AwsService {

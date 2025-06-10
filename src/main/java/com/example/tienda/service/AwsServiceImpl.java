@@ -102,4 +102,14 @@ public class AwsServiceImpl implements AwsService {
             }
         }
     }
+
+    @Override
+    public List<String> listarFacturasPorCliente(String clienteId) {
+        return s3Repository.listObjectsInBucket(bucketName).stream()
+                .map(Asset::getKey)
+                .filter(key -> key.startsWith(clienteId + "/"))
+                .toList();
+     }
+
+
 }
