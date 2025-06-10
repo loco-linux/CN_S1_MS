@@ -33,6 +33,8 @@ ENV TNS_ADMIN=/app/wallet
 # Exponer el puerto 8080
 EXPOSE 8080
 
+RUN mkdir -p /app/efs
+
 # Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
