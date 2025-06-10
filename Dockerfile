@@ -35,9 +35,7 @@ ENV TNS_ADMIN=/app/wallet
 
 
 # Crear directorio EFS con permisos adecuados
-RUN mkdir -p /app/efs && \
-    chown appuser:appgroup /app/efs && \
-    chmod 755 /app/efs
+RUN mkdir -p /app/efs && chmod 755 /app/efs
 
 
 # Crear un volume point para EFS
