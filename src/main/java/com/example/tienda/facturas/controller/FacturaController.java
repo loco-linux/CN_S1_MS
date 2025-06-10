@@ -17,7 +17,7 @@ public class FacturaController {
 
     private final AwsService awsService = null;
 
-    @PostMapping("/upload")
+/*  @PostMapping("/upload")
     public ResponseEntity<String> uploadFactura(
             @RequestParam("file") MultipartFile file,
             @RequestParam("clienteId") String clienteId) throws IOException {
@@ -29,5 +29,18 @@ public class FacturaController {
 
         String resultado = awsService.uploadFile(s3Path, file); // llama a tu método existente
         return ResponseEntity.ok("Factura subida correctamente: " + resultado);
+    }*/
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFactura(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("clienteId") String clienteId) throws IOException {
+
+        String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        String keyPath = clienteId + "/" + fecha; // ejemplo: cliente123/2024-06
+        String resultado = awsService.uploadFile(keyPath, file);
+
+        return ResponseEntity.ok("Factura subida correctamente a: " + keyPath + "/" + resultado);
     }
+
 }

@@ -1,16 +1,22 @@
 package com.example.tienda.service;
 
-import com.example.tienda.model.Asset;
-import com.example.tienda.repository.S3Repository;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import com.example.tienda.model.Asset;
+import com.example.tienda.repository.S3Repository;
 
 @Service
 public class AwsServiceImpl implements AwsService {
@@ -71,7 +77,7 @@ public class AwsServiceImpl implements AwsService {
         s3Repository.deleteObject(bucketName, fileKey);
     }
 
-    @Override
+    /*@Override
     public String uploadFile(String bucketName, String filePath, MultipartFile file) {
         File fileObj = null;
         try {
@@ -90,7 +96,40 @@ public class AwsServiceImpl implements AwsService {
                 }
             }
         }
+    }*/
+
+    @Override
+    public String uploadFile(String bucketName, MultipartFile file) {
+        File fileObj = null;
+        try {
+            // Crear archivo temporal en EFS
+            File efsDir = new File("/app/efs");
+            if (!efsDir.exists()) {
+                boolean created = efsDir.mkdirs();
+                if (!created) log.warn("No se pudo crear el directorio EFS.");
+            }
+    
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            fileObj = new File(efsDir, fileName);
+            file.transferTo(fileObj);
+    
+            // Subir a S3 usando ruta completa como parámetro
+            s3Repository.uploadFile(bucketName, fileName, fileObj);
+    
+            return fileName;
+        } catch (IOException e) {
+            log.error("Error uploading file to S3", e);
+            throw new RuntimeException("Error uploading file", e);
+        } finally {
+            if (fileObj != null && fileObj.exists()) {
+                if (!fileObj.delete()) {
+                    log.warn("Temporary file {} was not deleted", fileObj.getAbsolutePath());
+                }
+            }
+        }
     }
+    
+
 
     private File convertMultiPartFileToFile(MultipartFile file) throws IOException {
         File convertedFile = File.createTempFile("upload-", file.getOriginalFilename());
